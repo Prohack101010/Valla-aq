@@ -252,6 +252,7 @@ class MusicBeatState extends FlxUIState
 	}
 	
 	public static function switchState(nextState:FlxState = null) {
+	    FunkinLua.FPSCounterText = null;
 		if(nextState == null) nextState = FlxG.state;
 		if(nextState == FlxG.state)
 		{

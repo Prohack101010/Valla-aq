@@ -31,7 +31,7 @@ using StringTools;
 import CheckboxThingie;
 import AttachedText;
 
-class BaseModsOptionsMenu extends MusicBeatSubstate
+class BaseModOptionsMenu extends MusicBeatSubstate
 {
 	private var curOption:Option = null;
 	private var curSelected:Int = 0;

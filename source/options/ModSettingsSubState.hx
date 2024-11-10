@@ -2,7 +2,7 @@ package options;
 
 import flixel.input.keyboard.FlxKey;
 
-class ModSettingsSubState extends BaseModsOptionsMenu
+class ModSettingsSubState extends BaseModOptionsMenu
 {
 	var save:Map<String, Dynamic> = new Map<String, Dynamic>();
 	var folder:String;

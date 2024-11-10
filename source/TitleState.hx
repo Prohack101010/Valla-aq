@@ -23,7 +23,6 @@ import options.GraphicsSettingsSubState;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxGroup;
-import flixel.input.gamepad.FlxGamepad;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -150,7 +149,7 @@ class TitleState extends MusicBeatState
 		#if CHECK_FOR_UPDATES
 		if(ClientPrefs.data.checkForUpdates && !closedState) {
 			trace('checking for update');
-			var http = new haxe.Http("https://raw.githubusercontent.com/MaysLastPlayGithub/FNF-PsychEngine/main/gitVersion.txt");
+			var http = new haxe.Http("https://raw.githubusercontent.com/Prohack101010/PsychEngine-Extended-REBASE/main/gitVersion.txt");
 
 			http.onData = function (data:String)
 			{
@@ -341,8 +340,6 @@ class TitleState extends MusicBeatState
 
 			default:
 			//EDIT THIS ONE IF YOU'RE MAKING A SOURCE CODE MOD!!!!
-			//EDIT THIS ONE IF YOU'RE MAKING A SOURCE CODE MOD!!!!
-			//EDIT THIS ONE IF YOU'RE MAKING A SOURCE CODE MOD!!!!
 				gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
 				gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 				gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
@@ -460,19 +457,6 @@ class TitleState extends MusicBeatState
 		}
 		#end
 		
-		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
-
-		if (gamepad != null)
-		{
-			if (gamepad.justPressed.START)
-				pressedEnter = true;
-
-			#if switch
-			if (gamepad.justPressed.B)
-				pressedEnter = true;
-			#end
-		}
-		
 		if (newTitle) {
 			titleTimer += CoolUtil.boundTo(elapsed, 0, 1);
 			if (titleTimer > 2) titleTimer -= 2;
@@ -509,15 +493,14 @@ class TitleState extends MusicBeatState
 
     			new FlxTimer().start(1, function(tmr:FlxTimer)
     			{
-    				if (mustUpdate) {
+    			    #if (INDIECROSS_ASSETS || INDIECROSS_FORCED)
+                	if (ClientPrefs.data.IndieCrossMenus && Paths.currentModDirectory.startsWith('Indie Cross V1.5')) //I dont have a Better Solution for now
+                	    TitleState.IndieCrossEnabled = true;
+                	#end
+    				if (mustUpdate)
     					MusicBeatState.switchState(new OutdatedState());
-    				} else {
-                		#if (INDIECROSS_ASSETS || INDIECROSS_FORCED)
-                	    if (ClientPrefs.data.IndieCrossMenus && Paths.currentModDirectory.startsWith('Indie Cross')) //I dont have a Better Solution for now
-                	        TitleState.IndieCrossEnabled = true;
-                	    #end
+    				else
                 	    CustomSwitchState.switchMenus('MainMenu');
-    				}
     				closedState = true;
     			});
 				// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
@@ -559,26 +542,16 @@ class TitleState extends MusicBeatState
 							});
 							FlxG.sound.music.fadeOut();
 							if (ClientPrefs.data.FreeplayStyle == 'NF')
-							{
     							if(FreeplayStateNF.vocals != null)
-    							{
     								FreeplayStateNF.vocals.fadeOut();
-    							}
-    						}
+    								
     						else if (ClientPrefs.data.FreeplayStyle == 'NovaFlare')
-							{
     							if(FreeplayStateNOVA.vocals != null)
-    							{
     								FreeplayStateNOVA.vocals.fadeOut();
-    							}
-    						}
     						else
-    						{
     							if(FreeplayState.vocals != null)
-    							{
     								FreeplayState.vocals.fadeOut();
-    							}
-    						}
+
 							closedState = true;
 							transitioning = true;
 							playJingle = true;
@@ -678,31 +651,31 @@ class TitleState extends MusicBeatState
 					#else
 					addMoreText('present');
 					#end
-				case 5:
+				case 7:
 					deleteCoolText();
-				case 6:
+				case 8:
 					#if PSYCH_WATERMARKS
 					createCoolText(['Not associated', 'with'], -40);
 					#else
 					createCoolText(['In association', 'with'], -40);
 					#end
-				case 8:
+				case 9:
 					addMoreText('newgrounds', -40);
 					ngSpr.visible = true;
-				case 9:
+				case 10:
 					deleteCoolText();
 					ngSpr.visible = false;
-				case 10:
+				case 11:
 					createCoolText([curWacky[0]]);
-				case 12:
-					addMoreText(curWacky[1]);
 				case 13:
-					deleteCoolText();
+					addMoreText(curWacky[1]);
 				case 14:
-					addMoreText('Friday');
+					deleteCoolText();
 				case 15:
-					addMoreText('Night');
+					addMoreText('Friday');
 				case 16:
+					addMoreText('Night');
+				case 17:
 					addMoreText('Funkin');
 
 				case 17:
@@ -785,26 +758,16 @@ class TitleState extends MusicBeatState
 				{
 					FlxG.sound.music.fadeOut();
 					if (ClientPrefs.data.FreeplayStyle == 'NF')
-					{
     					if(FreeplayStateNF.vocals != null)
-    					{
     						FreeplayStateNF.vocals.fadeOut();
-    					}
-    				}
+
     				else if (ClientPrefs.data.FreeplayStyle == 'NovaFlare')
-					{
     					if(FreeplayStateNOVA.vocals != null)
-    					{
     						FreeplayStateNOVA.vocals.fadeOut();
-    					}
-    				}
+
     				else
-					{
     					if(FreeplayState.vocals != null)
-    					{
     						FreeplayState.vocals.fadeOut();
-    					}
-    				}
 				}
 				#end
 			}

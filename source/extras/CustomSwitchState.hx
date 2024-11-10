@@ -4,6 +4,7 @@ class CustomSwitchState //Now You Can Add and Remove Custom Menus More Easier Th
 {
     public static function switchMenus(Type:String)
 	{
+	    FunkinLua.FPSCounterText = null;
 	    if (Type == 'Freeplay') //Freeplay
 	    {
 	        if (TitleState.IndieCrossEnabled)
