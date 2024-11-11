@@ -35,6 +35,7 @@ import Achievements;
 // FlxAnimate
 #if flxanimate
 import flxanimate.*;
+import flxanimate.PsychFlxAnimate as FlxAnimate;
 #end
 
 #if sys
