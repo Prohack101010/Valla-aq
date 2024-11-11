@@ -856,7 +856,7 @@ class Paths
 		var changedAnimJson = false;
 		var changedAtlasJson = false;
 		var changedImage = false;
-
+		
 		if(spriteJson != null)
 		{
 			changedAtlasJson = true;
@@ -880,21 +880,21 @@ class Paths
 
 				if(!changedAtlasJson)
 				{
-					spriteJson = getTextFromFile('images/$originalPath/spritemap1.json'); //I used spritemap1 because spritemap$st doesn't work.
+					spriteJson = getTextFromFile('images/$originalPath/spritemap$st.json');
 					if(spriteJson != null)
 					{
 						//trace('found Sprite Json');
 						changedImage = true;
 						changedAtlasJson = true;
-						folderOrImg = Paths.image('$originalPath/spritemap1');
+						folderOrImg = image('$originalPath/spritemap$st');
 						break;
 					}
 				}
-				else if(Paths.fileExists('images/$originalPath/spritemap1.png', IMAGE))
+				else if(fileExists('images/$originalPath/spritemap$st.png', IMAGE))
 				{
 					//trace('found Sprite PNG');
 					changedImage = true;
-					folderOrImg = Paths.image('$originalPath/spritemap1');
+					folderOrImg = image('$originalPath/spritemap$st');
 					break;
 				}
 			}
@@ -903,7 +903,7 @@ class Paths
 			{
 				//trace('Changing folderOrImg to FlxGraphic');
 				changedImage = true;
-				folderOrImg = Paths.image(originalPath);
+				folderOrImg = image(originalPath);
 			}
 
 			if(!changedAnimJson)
