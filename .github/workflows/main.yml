@@ -19,7 +19,7 @@ jobs:
           key: cache-build-android-fix
           path: |
             ~/.gradle
-            .haxelib/
+            # .haxelib/
             export/release/android/haxe/
             export/release/android/obj/
           restore-keys: |
