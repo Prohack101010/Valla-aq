@@ -6,6 +6,7 @@ import shaders.Shaders.BrightHandler;
 import shaders.Shaders.ChromaHandler;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
+import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
 import flixel.addons.transition.FlxTransitionableState;
@@ -23,7 +24,7 @@ import flixel.input.actions.FlxActionInput;
 import mobile.flixel.FlxVirtualPad;
 import flixel.util.FlxDestroyUtil;
 
-class MusicBeatState extends FlxState
+class MusicBeatState extends FlxUIState
 {
     public static var instance:MusicBeatState;
     
