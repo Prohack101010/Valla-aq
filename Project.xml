@@ -48,8 +48,6 @@
     	<define name="BASE_GAME_ASSETS" />
     	<define name="INDIECROSS_ASSETS" />
 	</section>
-	<define name="HXVLC_ALLOWED" if="ios" /> <!-- If you want to use hxvlc Enable This -->
-	<define name="HXCODEC_ALLOWED" unless="ios" /> <!-- Same as HXVLC_ALLOWED -->
 	<define name="HIDE_CURSOR" if="mobile" /> <!-- DELETE THIS IF YOU WANT TO SEE CURSOR IN PC BUILDS -->
 	<define name="INDIECROSS_ASSETS" if="cross_enabled" /> <!-- DELETE THIS IF YOU DONT WANT INDIE CROSS ASSETS -->
 	<define name="INDIECROSS_FORCED" if="cross_forced" /> <!-- DELETE THIS TO REMOVE FORCED INDIE CROSS MENUS ON INDIE CROSS MODS -->
@@ -137,7 +135,7 @@
 	
 	<!--Psych stuff needed-->
 	<haxelib name="linc_luajit" if="LUA_ALLOWED"/>
-	<haxelib name="hxCodec" if="HXCODEC_ALLOWED"/> 
+	<haxelib name="hxCodec" /> 
 	<haxelib name="tjson"/>
     <haxelib name="extension-androidtools" if="android"/>
 	<haxelib name="faxe" if='switch'/>
@@ -146,7 +144,6 @@
 	<define name="hscriptPos" />
 	
 	<!-- Extra packages-->
-	<haxelib name="hxvlc" if="HXVLC_ALLOWED"/>
 	<haxelib name="grig.audio" />
 	<haxelib name="flxanimate"/>
 	<haxelib name="funkin.vis"/>
