@@ -1549,12 +1549,11 @@ class ChartingState extends MusicBeatState
 			else if (wname == 'inst_volume')
 			{
 				FlxG.sound.music.volume = nums.value;
-				if(check_mute_inst.checked) FlxG.sound.music.volume = 0;
 			}
 			else if (wname == 'voices_volume')
 			{
 				vocals.volume = nums.value;
-			    if(check_mute_vocals.checked) vocals.volume = 0;
+			    //if(check_mute_vocals.checked) vocals.volume = 0;
 			}
 			else if (wname == 'voices_opp_volume')
 			{
