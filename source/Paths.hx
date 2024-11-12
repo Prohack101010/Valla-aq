@@ -131,7 +131,10 @@ class Paths
 	    #if MODS_ALLOWED
 		if(modsAllowed)
 		{
-			var modded:String = modFolders(file);
+			var customFile:String = file;
+			if (library != null)
+				customFile = '$library/$file';
+			var modded:String = modFolders(customFile);
 			if(FileSystem.exists(modded)) return modded;
 		}
 		#end
@@ -311,18 +314,8 @@ class Paths
 
 	inline static public function inst(song:String):Sound
 	{
-	    var diffvoice = Difficulty.getString().toUpperCase();
-	    
-		var songdiffKey:String = '${formatToSongPath(song)}/Inst-$diffvoice';
 	    var songKey:String = '${formatToSongPath(song)}/Inst';
-		
 		var inst = returnSound(null, songKey, 'songs');
-		try
-		{
-		    inst = returnSound(null, songdiffKey, 'songs');
-		}
-		catch(e:Dynamic) {}
-		
 		return inst;
 	}
 
