@@ -1451,7 +1451,6 @@ class ChartingState extends MusicBeatState
 		vocals.autoDestroy = false;
 		FlxG.sound.list.add(vocals);
 
-		var file:Dynamic = Paths.voices(currentSongName, null, true);
 		opponentVocals.autoDestroy = false;
 		FlxG.sound.list.add(opponentVocals);
 		generateSong();

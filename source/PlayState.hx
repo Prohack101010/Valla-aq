@@ -393,7 +393,7 @@ class PlayState extends MusicBeatState
 			keysPressed.push(false);
 		}
 
-		FlxG.sound.music.stop();
+		FlxG.sound.music?.stop();
 
 		// Gameplay settings
 		healthGain = ClientPrefs.getGameplaySetting('healthgain', 1);
@@ -2510,19 +2510,15 @@ class PlayState extends MusicBeatState
         try
 	    {
 	        if (songData.needsVoices)
-	            vocals = new FlxSound().loadEmbedded(Paths.voices(songData.song), false);
+	        {
+				var playerVocals = Paths.voices(songData.song, (boyfriend.vocalsFile == null || boyfriend.vocalsFile.length < 1) ? 'Player' : boyfriend.vocalsFile);
+				vocals.loadEmbedded(playerVocals ?? Paths.voices(songData.song));
+				
+				var oppVocals = Paths.voices(songData.song, (dad.vocalsFile == null || dad.vocalsFile.length < 1) ? 'Opponent' : dad.vocalsFile);
+				if(oppVocals != null) opponentVocals.loadEmbedded(oppVocals);
+			}
 	    }
 	    catch(e:Dynamic) {}
-	    
-        try
-        {
-            if (songData.needsVoices)
-            {
-		        vocals = new FlxSound().loadEmbedded(Paths.voices(songData.song, (boyfriend.vocalsFile == null || boyfriend.vocalsFile.length < 1) ? 'Player' : boyfriend.vocalsFile), false);
-		        opponentVocals = new FlxSound().loadEmbedded(Paths.voices(songData.song, (dad.vocalsFile == null || dad.vocalsFile.length < 1) ? 'Opponent' : dad.vocalsFile), false);
-		    }
-		}
-		catch(e:Dynamic) {}
 
 		#if FLX_PITCH
 		vocals.pitch = playbackRate;
@@ -2820,28 +2816,8 @@ class PlayState extends MusicBeatState
 				opponentVocals.pause();
 			}
 
-			if (startTimer != null && !startTimer.finished)
-				startTimer.active = false;
-			if (finishTimer != null && !finishTimer.finished)
-				finishTimer.active = false;
-			if (songSpeedTween != null)
-				songSpeedTween.active = false;
-
-			if(carTimer != null) carTimer.active = false;
-
-			var chars:Array<Character> = [boyfriend, gf, dad];
-			for (char in chars) {
-				if(char != null && char.colorTween != null) {
-					char.colorTween.active = false;
-				}
-			}
-
-			for (tween in modchartTweens) {
-				tween.active = false;
-			}
-			for (timer in modchartTimers) {
-				timer.active = false;
-			}
+			FlxTimer.globalManager.forEach(function(tmr:FlxTimer) if(!tmr.finished) tmr.active = false);
+			FlxTween.globalManager.forEach(function(twn:FlxTween) if(!twn.finished) twn.active = false);
 		}
 
 		super.openSubState(SubState);
@@ -2849,6 +2825,8 @@ class PlayState extends MusicBeatState
 
 	override function closeSubState()
 	{
+	    super.closeSubState();
+	    
 		if (paused)
 		{
 		    if (ClientPrefs.data.PauseMenuStyle == 'NovaFlare')
@@ -2871,28 +2849,9 @@ class PlayState extends MusicBeatState
 				resyncVocals();
 			}
 
-			if (startTimer != null && !startTimer.finished)
-				startTimer.active = true;
-			if (finishTimer != null && !finishTimer.finished)
-				finishTimer.active = true;
-			if (songSpeedTween != null)
-				songSpeedTween.active = true;
-
-			if(carTimer != null) carTimer.active = true;
-
-			var chars:Array<Character> = [boyfriend, gf, dad];
-			for (char in chars) {
-				if(char != null && char.colorTween != null) {
-					char.colorTween.active = true;
-				}
-			}
-
-			for (tween in modchartTweens) {
-				tween.active = true;
-			}
-			for (timer in modchartTimers) {
-				timer.active = true;
-			}
+			FlxTimer.globalManager.forEach(function(tmr:FlxTimer) if(!tmr.finished) tmr.active = true);
+			FlxTween.globalManager.forEach(function(twn:FlxTween) if(!twn.finished) twn.active = true);
+			
 			paused = false;
 			callOnLuas('onResume', []);
 
@@ -2907,8 +2866,6 @@ class PlayState extends MusicBeatState
 			}
 			#end
 		}
-
-		super.closeSubState();
 	}
 
 	override public function onFocus():Void
@@ -2963,6 +2920,7 @@ class PlayState extends MusicBeatState
 			opponentVocals.time = Conductor.songPosition;
 			#if FLX_PITCH opponentVocals.pitch = playbackRate; #end
 		}
+		
 		vocals.play();
 		opponentVocals.play();
 	}
@@ -3524,6 +3482,7 @@ class PlayState extends MusicBeatState
 	{
 		persistentUpdate = false;
 		paused = true;
+		FlxG.sound.music?.stop();
 		cancelMusicFadeTween();
 		MusicBeatState.switchState(new ChartingState());
 		chartingMode = true;
@@ -3546,16 +3505,15 @@ class PlayState extends MusicBeatState
 				paused = true;
 
 				vocals.stop();
+				opponentVocals.stop();
 				FlxG.sound.music.stop();
 
 				persistentUpdate = false;
 				persistentDraw = false;
-				for (tween in modchartTweens) {
-					tween.active = true;
-				}
-				for (timer in modchartTimers) {
-					timer.active = true;
-				}
+				FlxTimer.globalManager.clear();
+				FlxTween.globalManager.clear();
+				modchartTimers.clear();
+				modchartTweens.clear();
 				openSubState(new GameOverSubstate(boyfriend));
 
 				// MusicBeatState.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
@@ -4057,10 +4015,12 @@ class PlayState extends MusicBeatState
 
 		updateTime = false;
 		FlxG.sound.music.volume = 0;
+		
 		vocals.volume = 0;
 		vocals.pause();
 		opponentVocals.volume = 0;
 		opponentVocals.pause();
+		
 		if(ClientPrefs.data.noteOffset <= 0 || ignoreNoteOffset) {
 			finishCallback();
 		} else {
@@ -5065,10 +5025,10 @@ class PlayState extends MusicBeatState
 		super.destroy();
 	}
 
-	public static function cancelMusicFadeTween() {
-		if(FlxG.sound.music.fadeTween != null) {
-			FlxG.sound.music.fadeTween.cancel();
-		}
+	public static function cancelMusicFadeTween()
+	{
+		FlxG.sound.music.fadeTween?.cancel();
+		FlxG.sound.music.fadeTween = null;
 	}
 
 	var lastStepHit:Int = -1;
@@ -5076,11 +5036,16 @@ class PlayState extends MusicBeatState
 	{
 		super.stepHit();
 		
-		if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate)
-			|| (SONG.needsVoices && Math.abs(vocals.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate))
-			|| (SONG.needsVoices && Math.abs(opponentVocals.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate)))
+		if(SONG.needsVoices && FlxG.sound.music.time >= -ClientPrefs.data.noteOffset)
 		{
-    		resyncVocals();
+		    var timeSub:Float = Conductor.songPosition - Conductor.offset;
+			var syncTime:Float = 20 * playbackRate;
+			if (Math.abs(FlxG.sound.music.time - timeSub) > syncTime ||
+			(vocals.length > 0 && Math.abs(vocals.time - timeSub) > syncTime) ||
+			(opponentVocals.length > 0 && Math.abs(opponentVocals.time - timeSub) > syncTime))
+			{
+				resyncVocals();
+			}
 		}
 
 		if(curStep == lastStepHit) {
