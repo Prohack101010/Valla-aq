@@ -1230,6 +1230,7 @@ class ChartingState extends MusicBeatState
 		if (FlxG.save.data.chart_waveformInst == null) FlxG.save.data.chart_waveformInst = false;
 		if (FlxG.save.data.chart_waveformVoices == null) FlxG.save.data.chart_waveformVoices = false;
 		if (FlxG.save.data.chart_waveformOppVoices == null) FlxG.save.data.chart_waveformOppVoices = false;
+		
 		var waveformUseInstrumental:FlxUICheckBox = null;
 		var waveformUseVoices:FlxUICheckBox = null;
 		var waveformUseOppVoices:FlxUICheckBox = null;
@@ -1423,36 +1424,25 @@ class ChartingState extends MusicBeatState
 		vocals?.destroy();
 		opponentVocals?.stop();
 		opponentVocals?.destroy();
-
 		vocals = new FlxSound();
-        opponentVocals = new FlxSound();
-        try
-	    {
-	        if (PlayState.SONG.needsVoices)
-	            vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
-	    }
-	    catch(e:Dynamic) {}
-	    
-        try
-        {
-            if (PlayState.SONG.needsVoices)
-		        vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song, (characterData.vocalsP1 == null || characterData.vocalsP1.length < 1) ? 'Player' : characterData.vocalsP1));
-		}
-		catch(e:Dynamic) {}
-	    
+		opponentVocals = new FlxSound();
 		try
 		{
-		    if (PlayState.SONG.needsVoices)
-		        opponentVocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song, (characterData.vocalsP2 == null || characterData.vocalsP2.length < 1) ? 'Opponent' : characterData.vocalsP2));
-	    }
-	    catch(e:Dynamic) {
-	        opponentVocals = new FlxSound();
-	    }
+	        var playerVocals = Paths.voices(currentSongName, (characterData.vocalsP1 == null || characterData.vocalsP1.length < 1) ? 'Player' : characterData.vocalsP1);
+			vocals.loadEmbedded(playerVocals ?? Paths.voices(currentSongName));
+		}
 		vocals.autoDestroy = false;
 		FlxG.sound.list.add(vocals);
-
+	    
+        opponentVocals = new FlxSound();
+		try
+		{
+            var oppVocals = Paths.voices(currentSongName, (characterData.vocalsP2 == null || characterData.vocalsP2.length < 1) ? 'Opponent' : characterData.vocalsP2);
+			if(oppVocals != null) opponentVocals.loadEmbedded(oppVocals);
+		}
 		opponentVocals.autoDestroy = false;
 		FlxG.sound.list.add(opponentVocals);
+		
 		generateSong();
 		FlxG.sound.music.pause();
 		Conductor.songPosition = sectionStartTime();
@@ -1559,11 +1549,12 @@ class ChartingState extends MusicBeatState
 			else if (wname == 'inst_volume')
 			{
 				FlxG.sound.music.volume = nums.value;
+				if(check_mute_inst.checked) FlxG.sound.music.volume = 0;
 			}
 			else if (wname == 'voices_volume')
 			{
 				vocals.volume = nums.value;
-			    //if(check_mute_vocals.checked) vocals.volume = 0; Doesn't Work
+			    if(check_mute_vocals.checked) vocals.volume = 0;
 			}
 			else if (wname == 'voices_opp_volume')
 			{

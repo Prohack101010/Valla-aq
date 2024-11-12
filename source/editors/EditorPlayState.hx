@@ -113,28 +113,26 @@ class EditorPlayState extends MusicBeatState
 		vocals = new FlxSound();
 		opponentVocals = new FlxSound();
 		try
-        {
-            if (PlayState.SONG.needsVoices)
-		        vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song, (boyfriendVocals == null || boyfriendVocals.length < 1) ? 'Player' : boyfriendVocals));
-		}
-		catch(e:Dynamic)
 		{
-		    try
-    	    {
-    	        if (PlayState.SONG.needsVoices)
-    	            vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
-    	    }
-    	    catch(e:Dynamic) { vocals = new FlxSound(); }
+			if (songData.needsVoices)
+			{
+				var playerVocals = Paths.voices(songData.song, (boyfriendVocals == null || boyfriendVocals.length < 1) ? 'Player' : boyfriendVocals);
+				vocals.loadEmbedded(playerVocals ?? Paths.voices(songData.song));
+				
+				var oppVocals = Paths.voices(songData.song, (dadVocals == null || dadVocals.length < 1) ? 'Opponent' : dadVocals);
+				if(oppVocals != null) opponentVocals.loadEmbedded(oppVocals);
+			}
 		}
-	    
-		try
-		{
-		    if (PlayState.SONG.needsVoices)
-		        opponentVocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song, (dadVocals == null || dadVocals.length < 1) ? 'Opponent' : dadVocals));
-	    }
-	    catch(e:Dynamic) {
-	        opponentVocals = new FlxSound();
-	    }
+		catch(e:Dynamic) {}
+		vocals.volume = 0;
+		opponentVocals.volume = 0;
+		
+		#if FLX_PITCH
+		vocals.pitch = playbackRate;
+		opponentVocals.pitch = playbackRate;
+		#end
+		FlxG.sound.list.add(vocals);
+		FlxG.sound.list.add(opponentVocals);
 
 		generateSong(PlayState.SONG.song);
 		#if (LUA_ALLOWED && MODS_ALLOWED)
@@ -576,10 +574,16 @@ class EditorPlayState extends MusicBeatState
 
 	override function stepHit()
 	{
-		super.stepHit();
-		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
+		if (PlayState.SONG.needsVoices && FlxG.sound.music.time >= -ClientPrefs.data.noteOffset)
 		{
-			resyncVocals();
+		    var timeSub:Float = Conductor.songPosition - Conductor.offset;
+			var syncTime:Float = 20 * playbackRate;
+			if (Math.abs(FlxG.sound.music.time - timeSub) > syncTime ||
+			(vocals.length > 0 && Math.abs(vocals.time - timeSub) > syncTime) ||
+			(opponentVocals.length > 0 && Math.abs(opponentVocals.time - timeSub) > syncTime))
+			{
+				resyncVocals();
+			}
 		}
 	}
 
@@ -1107,15 +1111,15 @@ class EditorPlayState extends MusicBeatState
 		#if MODS_ALLOWED
 		var path:String = Paths.modFolders(characterPath);
 		if (!FileSystem.exists(path)) {
-			path = Paths.getSharedPath(characterPath);
+			path = Paths.getPreloadPath(characterPath);
 		}
 		if (!FileSystem.exists(path))
 		#else
-		var path:String = Paths.getSharedPath(characterPath);
+		var path:String = Paths.getPreloadPath(characterPath);
 		if (!OpenFlAssets.exists(path))
 		#end
 		{
-			path = Paths.getSharedPath('characters/' + Character.DEFAULT_CHARACTER + '.json'); //If a character couldn't be found, change him to BF just to prevent a crash
+			path = Paths.getPreloadPath('characters/' + Character.DEFAULT_CHARACTER + '.json'); //If a character couldn't be found, change him to BF just to prevent a crash
 		}
 		#if MODS_ALLOWED
 		var rawJson = File.getContent(path);

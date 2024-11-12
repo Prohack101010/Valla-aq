@@ -1308,7 +1308,7 @@ class CharacterEditorState extends MusicBeatState
 		if (data.length > 0)
 		{
 			#if mobile
-			StorageUtil.saveContent("$daAnim.json", data);
+			StorageUtil.saveContent(daAnim + ".json", data);
 			#else
 			_file = new FileReference();
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
